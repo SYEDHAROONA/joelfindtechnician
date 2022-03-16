@@ -42,6 +42,7 @@ class _LoginSuccessState extends State<LoginSuccess> {
   @override
   initState() {
     super.initState();
+
     findToken();
     setupLocalNoti();
   }
@@ -65,6 +66,7 @@ class _LoginSuccessState extends State<LoginSuccess> {
     bool checkMessage = true;
 
     List<String?> strings = myMessage!.split('@');
+    print('#16mar strings ==>> $strings');
     if (!(strings[0]?.isEmpty ?? true)) {
       strings[0] = strings[0]!.trim();
       if ((strings[0] == 'NonApprove') ||
@@ -74,52 +76,60 @@ class _LoginSuccessState extends State<LoginSuccess> {
       }
     }
 
-    if (checkMessage) {
-      await FirebaseFirestore.instance
-          .collection('postcustomer')
-          .get()
-          .then((value) async {
-        for (var item in value.docs) {
-          PostCustomerModel postCustomerModel =
-              PostCustomerModel.fromMap(item.data());
-          await FirebaseFirestore.instance
-              .collection('postcustomer')
-              .doc(item.id)
-              .collection('replypost')
-              .get()
-              .then((value) {
-            for (var item in value.docs) {
-              ReplyPostModel replyPostModel =
-                  ReplyPostModel.fromMap(item.data());
-              if (replyPostModel.reply == myMessage) {
-                this.postCustomerModel = postCustomerModel;
-              }
-            }
-          });
-        }
-
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  CtmListAnswer(postCustomerModel: this.postCustomerModel!),
-            ));
-      });
-    } else {
-      print('Noti form Cancel AppointMent');
+    if (strings[0] == 'reply') {
+      // มาจากการตอบ ของ Technic ระดับ Reply ติดไว้เป็นการบ้าน เมื่อสร้างรายละเอียดแต่ละ 
       Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            if (strings[0] == 'Confirm') {
-              return CheckDetail();
-            } else {
-               return CustomerNotification();
-            }
-           
-          },
-        ),
-      );
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailNotiSocial(reply: strings[1]!.trim()),
+          ));
+    } else {
+      if (checkMessage) {
+        await FirebaseFirestore.instance
+            .collection('postcustomer')
+            .get()
+            .then((value) async {
+          for (var item in value.docs) {
+            PostCustomerModel postCustomerModel =
+                PostCustomerModel.fromMap(item.data());
+            await FirebaseFirestore.instance
+                .collection('postcustomer')
+                .doc(item.id)
+                .collection('replypost')
+                .get()
+                .then((value) {
+              for (var item in value.docs) {
+                ReplyPostModel replyPostModel =
+                    ReplyPostModel.fromMap(item.data());
+                if (replyPostModel.reply == myMessage) {
+                  this.postCustomerModel = postCustomerModel;
+                }
+              }
+            });
+          }
+
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    CtmListAnswer(postCustomerModel: this.postCustomerModel!),
+              ));
+        });
+      } else {
+        print('Noti form Cancel AppointMent');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              if (strings[0] == 'Confirm') {
+                return CheckDetail();
+              } else {
+                return CustomerNotification();
+              }
+            },
+          ),
+        );
+      } // end if
     }
   }
 
@@ -173,17 +183,20 @@ class _LoginSuccessState extends State<LoginSuccess> {
       }
     });
 
+    //เปิดแอฟอยู่ทำงานที่นี่นะ
     await FirebaseMessaging.onMessage.listen((event) {
       myTitle = event.notification!.title.toString();
       myMessage = event.notification!.body.toString();
-      print('#6jan onMessage ทำงาน title = $myTitle, message = $myMessage');
+      print('#16mar onMessage ทำงาน title = $myTitle, message = $myMessage');
       alertNotifiction(myTitle!, myMessage!);
     });
+
+    //ไม่ได้เปิดแอดทำงานที่นี่
     await FirebaseMessaging.onMessageOpenedApp.listen((event) {
       myTitle = event.notification!.title.toString();
       myMessage = event.notification!.body.toString();
       print(
-          '#6jan onMessageOpenApp ทำงาน title = $myTitle, message = $myMessage');
+          '#16mar onMessageOpenApp ทำงาน title = $myTitle, message = $myMessage');
       // alertNotifiction(myTitle!, myMessage!);
       processClickNoti();
     });

@@ -102,7 +102,6 @@ class _SplashState extends State<Splash> {
 class MyHttpOverride extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext context) {
-    // TODO: implement createHttpClient
     return super.createHttpClient(context)
       ..badCertificateCallback =
           (X509Certificate cer, String host, int port) => true;
