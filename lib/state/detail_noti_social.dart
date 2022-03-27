@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 import 'dart:math';
 
@@ -9,15 +10,19 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
 import 'package:joelfindtechnician/models/answer_model.dart';
+import 'package:joelfindtechnician/models/notification_model.dart';
 import 'package:joelfindtechnician/models/postcustomer_model.dart';
 import 'package:joelfindtechnician/models/replypost_model.dart';
 import 'package:joelfindtechnician/models/token_social_model.dart';
+import 'package:joelfindtechnician/models/user_model_old.dart';
 import 'package:joelfindtechnician/state/show_circleavatar.dart';
 import 'package:joelfindtechnician/state/show_general_profile.dart';
 import 'package:joelfindtechnician/state/show_image_post.dart';
 import 'package:joelfindtechnician/state/show_profile.dart';
 import 'package:joelfindtechnician/utility/check_user_social.dart';
+import 'package:joelfindtechnician/utility/process_sent_noti_by_token.dart';
 import 'package:joelfindtechnician/utility/time_to_string.dart';
 import 'package:joelfindtechnician/widgets/show_image.dart';
 import 'package:joelfindtechnician/widgets/show_progress.dart';
@@ -25,25 +30,27 @@ import 'package:joelfindtechnician/widgets/show_text.dart';
 
 class DetailNotiSocial extends StatefulWidget {
   final String reply;
-  const DetailNotiSocial({Key? key, required this.reply}) : super(key: key);
+
+  const DetailNotiSocial({
+    Key? key,
+    required this.reply,
+  }) : super(key: key);
 
   @override
   _DetailNotiSocialState createState() => _DetailNotiSocialState();
 }
 
 class _DetailNotiSocialState extends State<DetailNotiSocial> {
-  String? reply;
+  String? title, message;
+  List<PostCustomerModel> postCustomerModels = [];
   bool load = true;
+
   File? file;
-
-  String? currentDocIdPostCustomer;
-
-  PostCustomerModel? currentPostCustomerModel;
-  TokenSocialModel? tokenSocialModel;
-  var user = FirebaseAuth.instance.currentUser;
-
-  TextEditingController textEditingController = TextEditingController();
   bool showAddPhotoReplyPost = false; // true show Icon
+  TextEditingController textEditingController = TextEditingController();
+
+  String? docIdReply;
+
   List<ReplyPostModel> replyPostModels = [];
   String? docIdUser, docIdMyNotification;
   List<String> docIdNotifications = [];
@@ -54,20 +61,52 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
   List<List<String>> listDocIdAnswers = [];
   List<File?> fileAnswers = [];
   List<TextEditingController> answerControllers = [];
+
   var permissionAnswers = <bool>[];
+
+  var user = FirebaseAuth.instance.currentUser;
+
+  TokenSocialModel? tokenSocialModel;
 
   @override
   void initState() {
     super.initState();
-    reply = widget.reply;
-    print('#16mar job ==> $reply');
-    readPostCustomer();
+    title = '';
+    message = widget.reply;
+
+    print(
+        '#28Nov ค่าที่ได้จากคลิก Noti ที่ ShowDetailNoti ==>> $title, $message');
+    readDataNotifiction();
   }
 
-  Future<void> readPostCustomer() async {
-    if (replyPostModels.isNotEmpty) {
-      replyPostModels.clear();
+  processTakePhoto(ImageSource source) async {
+    try {
+      var result = await ImagePicker()
+          .pickImage(source: source, maxWidth: 800, maxHeight: 800);
 
+      setState(() {
+        file = File(result!.path);
+      });
+    } catch (e) {}
+  }
+
+  processTakePhotoAnswer(ImageSource source, int index) async {
+    try {
+      var result = await ImagePicker()
+          .getImage(source: source, maxWidth: 800, maxHeight: 800);
+      setState(() {
+        fileAnswers[index] = File(result!.path);
+      });
+    } catch (e) {}
+  }
+
+  Future<void> readDataNotifiction() async {
+    if (postCustomerModels.isNotEmpty) {
+      setState(() {
+        load = true;
+      });
+      postCustomerModels.clear();
+      replyPostModels.clear();
       showAddPhotoReplyPost = false;
       file = null;
       fileAnswers.clear();
@@ -80,6 +119,7 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
       answerControllers.clear();
       permissionAnswers.clear();
     }
+
     await Firebase.initializeApp().then((value) async {
       await FirebaseFirestore.instance
           .collection('social')
@@ -90,70 +130,123 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
       });
 
       await FirebaseFirestore.instance
-          .collection('postcustomer')
+          .collection('user')
+          .where('uid', isEqualTo: user!.uid)
           .get()
           .then((value) async {
-        load = false;
         for (var item in value.docs) {
-          String docIdPostCustomer = item.id;
+          docIdUser = item.id;
+          print('@4Dec docIdUser ==>> $docIdUser');
+        }
+      });
+    });
 
-          PostCustomerModel postCustomerModel =
-              PostCustomerModel.fromMap(item.data());
+    // For ReadPost on Postcustomer
+
+    await Firebase.initializeApp().then((value) async {
+      await FirebaseFirestore.instance
+          .collection('postcustomer')
+          .where('job', isEqualTo: message)
+          .get()
+          .then((value) async {
+        for (var item in value.docs) {
+          docIdReply = item.id;
+          PostCustomerModel model = PostCustomerModel.fromMap(item.data());
+
+          await FirebaseFirestore.instance
+              .collection('user')
+              .doc(docIdUser)
+              .collection('mynotification')
+              .where('message', isEqualTo: message)
+              .get()
+              .then((value) async {
+            for (var item in value.docs) {
+              docIdMyNotification = item.id;
+              print('@4Dec docIdMyNotification ==>> $docIdMyNotification');
+
+              NotificationModel notificationModel =
+                  NotificationModel.fromMap(item.data());
+              if (notificationModel.status == 'unread') {
+                Map<String, dynamic> map = {};
+                map['status'] = 'read';
+                await FirebaseFirestore.instance
+                    .collection('user')
+                    .doc(docIdUser)
+                    .collection('mynotification')
+                    .doc(docIdMyNotification)
+                    .update(map)
+                    .then((value) {
+                  print('@4Dec Update Success');
+                });
+              }
+            }
+          });
 
           await FirebaseFirestore.instance
               .collection('postcustomer')
-              .doc(docIdPostCustomer)
+              .doc(docIdReply)
               .collection('replypost')
+              .orderBy('timeReply', descending: true)
               .get()
               .then((value) async {
+            print('@4Dec value ==>> ${value.docs}');
+
             if (value.docs.isNotEmpty) {
-              await FirebaseFirestore.instance
-                  .collection('postcustomer')
-                  .doc(docIdPostCustomer)
-                  .collection('replypost')
-                  .where('reply', isEqualTo: reply)
-                  .get()
-                  .then((value) async{
-                for (var item in value.docs) {
-                  currentDocIdPostCustomer = item.id;
-                  currentPostCustomerModel = postCustomerModel;
+              for (var item in value.docs) {
+                showIconSentAnswers.add(false);
+                showAnswerTextFields.add(false);
+                fileAnswers.add(null);
+                answerControllers.add(TextEditingController());
+                String docIdReplyPost2 = item.id;
 
-                  showIconSentAnswers.add(false);
-                  showAnswerTextFields.add(false);
-                  fileAnswers.add(null);
-                  answerControllers.add(TextEditingController());
+                List<AnswerModel> answerModels = [];
+                List<String> docIdAnswers = [];
 
-                  ReplyPostModel replyPostModel =
-                      ReplyPostModel.fromMap(item.data());
-                  replyPostModels.add(replyPostModel);
+                await FirebaseFirestore.instance
+                    .collection('postcustomer')
+                    .doc(docIdReply)
+                    .collection('replypost')
+                    .doc(docIdReplyPost2)
+                    .collection('answer')
+                    .orderBy('timePost', descending: false)
+                    .get()
+                    .then((value) {
+                  if (value.docs.isNotEmpty) {
+                    for (var item in value.docs) {
+                      AnswerModel answerModel =
+                          AnswerModel.fromMap(item.data());
+                      answerModels.add(answerModel);
+                      docIdAnswers.add(item.id);
+                    }
+                  }
+                });
 
-                      await FirebaseFirestore.instance
-        .collection('postcustomer')
-        .doc(currentDocIdPostCustomer)
-        .collection('replypost')
-        .doc(docIdReplyPost2)
-        .collection('answer')
-        .orderBy('timePost', descending: false)
-        .get()
-        .then((value) {
-      if (value.docs.isNotEmpty) {
-        for (var item in value.docs) {
-          AnswerModel answerModel =
-              AnswerModel.fromMap(item.data());
-          answerModels.add(answerModel);
-          docIdAnswers.add(item.id);
-        }
-      }
-    });
+                ReplyPostModel replyPostModel =
+                    ReplyPostModel.fromMap(item.data());
 
+                if (replyPostModel.status == 'online') {
+                  setState(() {
+                    replyPostModels.add(replyPostModel);
+                    docIdNotifications.add(item.id);
+                    listAnswerModels.add(answerModels);
+                    docIdReplyPosts.add(docIdReplyPost2);
+                    listDocIdAnswers.add(docIdAnswers);
+                    permissionAnswers.add(user!.uid == replyPostModel.uid);
+                  });
                 }
-              });
+              }
             }
           });
+
+          setState(() {
+            load = false;
+            postCustomerModels.add(model);
+          });
         }
-        setState(() {});
       });
     });
+
+    /// End Thread
   }
 
   @override
@@ -173,7 +266,7 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     newName(),
-                    ShowText(title: currentPostCustomerModel!.job),
+                    ShowText(title: postCustomerModels[0].job),
                     Divider(thickness: 2),
                     newProvince(),
                     Divider(thickness: 2),
@@ -208,209 +301,6 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
               ),
             ),
     );
-  } // build
-
-  Row newName() {
-    return Row(
-      children: [
-        ShowCircleAvatar(url: currentPostCustomerModel!.pathUrl),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ShowText(
-              title: currentPostCustomerModel!.name,
-            ),
-            ShowText(
-              title: TimeToString(timestamp: currentPostCustomerModel!.timePost)
-                  .findString(),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Row newProvince() {
-    return Row(
-      children: [
-        Icon(Icons.location_on),
-        ShowText(title: currentPostCustomerModel!.district),
-        SizedBox(width: 8),
-        Icon(Icons.location_on),
-        ShowText(title: currentPostCustomerModel!.amphur),
-        SizedBox(width: 8),
-        Icon(Icons.location_on),
-        ShowText(title: currentPostCustomerModel!.province),
-      ],
-    );
-  }
-
-  Widget newReply(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 16),
-      child: Row(
-        children: [
-          InkWell(
-              onTap: () => processMove(user!.uid),
-              child: ShowCircleAvatar(url: tokenSocialModel!.avatarSocial)),
-          Container(
-            width: 200,
-            height: 80,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: TextFormField(
-                controller: textEditingController,
-                onChanged: (value) {
-                  showAddPhotoReplyPost = true;
-                  setState(() {
-                    if (value.isEmpty) {
-                      showAddPhotoReplyPost = false;
-                    }
-                  });
-                },
-                decoration: InputDecoration(
-                  suffix: IconButton(
-                    onPressed: () async {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: ListTile(
-                            leading: ShowImage(),
-                            title: ShowText(title: 'Choose Image'),
-                            subtitle: ShowText(title: 'Please Choose Image'),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                processTakePhoto(ImageSource.camera);
-                              },
-                              child: Text('Camera'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                processTakePhoto(ImageSource.gallery);
-                              },
-                              child: Text('Gallery'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('Cancel'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    icon: Icon(Icons.camera_alt_outlined),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          ((showAddPhotoReplyPost) || (file != null))
-              ? IconButton(
-                  onPressed: () async {
-                    if (file == null) {
-                      processInsertPostCustomer('');
-                    } else {
-                      await Firebase.initializeApp().then((value) async {
-                        String nameImage = 'reply${Random(100000000)}.jpg';
-                        FirebaseStorage storage = FirebaseStorage.instance;
-                        Reference reference =
-                            storage.ref().child('replypost/$nameImage');
-                        UploadTask task = reference.putFile(file!);
-                        await task.whenComplete(() async {
-                          await reference.getDownloadURL().then((value) {
-                            processInsertPostCustomer(value);
-                          });
-                        });
-                      });
-                    }
-                  },
-                  icon: Icon(Icons.send))
-              : SizedBox(),
-        ],
-      ),
-    );
-  }
-
-  Future<void> processMove(String uidAvatar) async {
-    print('#23jan uidAvatar ==>> $uidAvatar');
-    var result =
-        await CheckUserSocial(uidChecked: uidAvatar).processCheckUserSocial();
-    print('#23jan uidAvatar ==>> $uidAvatar === result ==> $result');
-    if (!result) {
-      if (uidAvatar == currentPostCustomerModel!.uidCustomer) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => ShowProfile()));
-      } else {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ShowGeneralProfile(
-                      uidTechnic: uidAvatar,
-                      showContact: false,
-                    )));
-      }
-    }
-  }
-
-  processTakePhoto(ImageSource source) async {
-    try {
-      var result = await ImagePicker()
-          .pickImage(source: source, maxWidth: 800, maxHeight: 800);
-      setState(() {
-        file = File(result!.path);
-      });
-    } catch (e) {}
-  }
-
-  Future<void> processInsertPostCustomer(String urlImagePost) async {
-    String token = currentPostCustomerModel!.token;
-    // print('#16mar processInsertPostCustomer Work token Owner Post ==> $token');
-    String name = tokenSocialModel!.nameSocial;
-    String pathImage = tokenSocialModel!.avatarSocial;
-    String reply = textEditingController.text;
-    DateTime dateTime = DateTime.now();
-    Timestamp timeReply = Timestamp.fromDate(dateTime);
-    String uid = user!.uid;
-    String status = 'online';
-    ReplyPostModel model = ReplyPostModel(
-        name: name,
-        pathImage: pathImage,
-        reply: reply,
-        timeReply: timeReply,
-        uid: uid,
-        urlImagePost: urlImagePost,
-        status: status);
-    String titleNoti = 'Answer from ${tokenSocialModel!.nameSocial}';
-    String bodyNoti = model.reply;
-    bodyNoti = 'reply@$bodyNoti';
-    String apiSentNotification =
-        'https://www.androidthai.in.th/eye/apiNotification.php?isAdd=true&token=$token&title=$titleNoti&body=$bodyNoti';
-    await Dio().get(apiSentNotification).then((value) async {
-      await Firebase.initializeApp().then((value) async {
-        await FirebaseFirestore.instance
-            .collection('postcustomer')
-            .doc(currentDocIdPostCustomer)
-            .collection('replypost')
-            .doc()
-            .set(model.toMap())
-            .then((value) {
-          print('#28Nov Insert Reply Success');
-          textEditingController.text = '';
-          file = null;
-          readPostCustomer();
-        });
-      });
-    }).catchError((onError) {
-      print('#16mar onError ==>> ${onError.toString()}');
-    });
   }
 
   Widget listReplyPost() {
@@ -477,17 +367,21 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
                           actions: [
                             TextButton(
                               onPressed: () async {
-                                // Navigator.pop(context);
-                                // Map<String, dynamic> map = {};
-                                // map['status'] = 'offline';
+                                Navigator.pop(context);
+                                Map<String, dynamic> map = {};
+                                map['status'] = 'offline';
 
-                                // await FirebaseFirestore.instance
-                                // .collection('postcustomer')
-                                // .doc(docIdReply)
-                                // .collection('replypost')
-                                // .doc(docIdNotifications[index])
-                                // .update(map)
-                                // .then((value) => readDataNotifiction());
+                                print('##4Dec map => $map');
+                                print(
+                                    '##4Dec docIdNoti = ${docIdNotifications[index]}');
+
+                                await FirebaseFirestore.instance
+                                    .collection('postcustomer')
+                                    .doc(docIdReply)
+                                    .collection('replypost')
+                                    .doc(docIdNotifications[index])
+                                    .update(map)
+                                    .then((value) => readDataNotifiction());
                               },
                               child: Text('ok'),
                             ),
@@ -533,6 +427,7 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
         listAnswerModels[index].isEmpty
             ? SizedBox()
             : newListAnswer(listAnswerModels[index], docIdReplyPosts[index]),
+
         permissionAnswers[index]
             ? TextButton(
                 onPressed: () {
@@ -552,8 +447,8 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
                     width: 30,
                   ),
                   InkWell(
-                      onTap: () => processMove(userModelOld!.uid),
-                      child: ShowCircleAvatar(url: userModelOld!.img)),
+                      onTap: () => processMove(user!.uid),
+                      child: ShowCircleAvatar(url: tokenSocialModel!.avatarSocial)),
                   Container(
                     height: 50,
                     width: 150,
@@ -683,5 +578,389 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
               ),
       ],
     );
+  }
+
+  Widget newListAnswer(List<AnswerModel> answerModels, String docIdReplyPost) {
+    List<Widget> widgets = [];
+
+    for (var model in answerModels) {
+      if (model.status == 'online') {
+        widgets.add(
+          Column(
+            children: [
+              Row(
+                children: [
+                  SizedBox(width: 30),
+                  InkWell(
+                      onTap: () => processMove(model.uidPost),
+                      child: ShowCircleAvatar(url: model.urlPost)),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 4),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black12,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ShowText(title: model.namePost),
+                        ShowText(
+                          title: TimeToString(timestamp: model.timePost)
+                              .findString(),
+                        ),
+                        ShowText(
+                          title: model.answer,
+                        )
+                      ],
+                    ),
+                  ),
+                  tokenSocialModel!.nameSocial == model.namePost
+                      ? IconButton(
+                          onPressed: () async {
+                            print(
+                                '#5Dec ==> delete at doc ==> $docIdReplyPost');
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: ListTile(
+                                  leading: ShowImage(),
+                                  title: ShowText(
+                                    title: 'Confirm Delete',
+                                  ),
+                                  subtitle: ShowText(
+                                    title: 'Delete ${model.answer} ?',
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () async {
+                                      Navigator.pop(context);
+                                      print('docCustomer ==> $docIdReply');
+                                      await FirebaseFirestore.instance
+                                          .collection('postcustomer')
+                                          .doc(docIdReply)
+                                          .collection('replypost')
+                                          .doc(docIdReplyPost)
+                                          .collection('answer')
+                                          .where('answer',
+                                              isEqualTo: model.answer)
+                                          .get()
+                                          .then((value) async {
+                                        for (var item in value.docs) {
+                                          String docIdAnswer = item.id;
+                                          print(
+                                              'delete t doc ==>> $docIdAnswer');
+
+                                          Map<String, dynamic> data = {};
+                                          data['status'] = 'offline';
+
+                                          await FirebaseFirestore.instance
+                                              .collection('postcustomer')
+                                              .doc(docIdReply)
+                                              .collection('replypost')
+                                              .doc(docIdReplyPost)
+                                              .collection('answer')
+                                              .doc(docIdAnswer)
+                                              .update(data)
+                                              .then((value) =>
+                                                  readDataNotifiction());
+                                        }
+                                      });
+                                    },
+                                    child: Text('Delete'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('Cancel'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          icon: Icon(Icons.delete_forever),
+                        )
+                      : SizedBox(),
+                ],
+              ),
+              model.urlImage.isEmpty
+                  ? SizedBox()
+                  : Container(
+                      width: 100,
+                      height: 80,
+                      child: InkWell(
+                        onTap: () {
+                          print('Click');
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ShowImagePost(
+                                      pathImage: model.urlImage)));
+                        },
+                        child: CachedNetworkImage(
+                          fit: BoxFit.cover,
+                          imageUrl: model.urlImage,
+                          placeholder: (context, url) => ShowProgress(),
+                          errorWidget: (context, url, error) => ShowImage(),
+                        ),
+                      ),
+                    ),
+            ],
+          ),
+        );
+      }
+    }
+    return Column(
+      children: widgets,
+    );
+  }
+
+  Row newProvince() {
+    return Row(
+      children: [
+        Icon(Icons.location_on),
+        ShowText(title: postCustomerModels[0].district),
+        SizedBox(width: 8),
+        Icon(Icons.location_on),
+        ShowText(title: postCustomerModels[0].amphur),
+        SizedBox(width: 8),
+        Icon(Icons.location_on),
+        ShowText(title: postCustomerModels[0].province),
+      ],
+    );
+  }
+
+  Widget newReply(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: 16),
+      child: Row(
+        children: [
+          InkWell(
+              onTap: () => processMove(user!.uid),
+              child: ShowCircleAvatar(url: tokenSocialModel!.avatarSocial)),
+          Container(
+            width: 200,
+            height: 80,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: TextFormField(
+                controller: textEditingController,
+                onChanged: (value) {
+                  showAddPhotoReplyPost = true;
+                  setState(() {
+                    if (value.isEmpty) {
+                      showAddPhotoReplyPost = false;
+                    }
+                  });
+                },
+                decoration: InputDecoration(
+                  suffix: IconButton(
+                    onPressed: () async {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: ListTile(
+                            leading: ShowImage(),
+                            title: ShowText(title: 'Choose Image'),
+                            subtitle: ShowText(title: 'Please Choose Image'),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                processTakePhoto(ImageSource.camera);
+                              },
+                              child: Text('Camera'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                processTakePhoto(ImageSource.gallery);
+                              },
+                              child: Text('Gallery'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text('Cancel'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    icon: Icon(Icons.camera_alt_outlined),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          ((showAddPhotoReplyPost) || (file != null))
+              ? IconButton(
+                  onPressed: () async {
+                    if (file == null) {
+                      processInsertPostCustomer('');
+                    } else {
+                      await Firebase.initializeApp().then((value) async {
+                        String nameImage = 'reply${Random(100000000)}.jpg';
+                        FirebaseStorage storage = FirebaseStorage.instance;
+                        Reference reference =
+                            storage.ref().child('replypost/$nameImage');
+                        UploadTask task = reference.putFile(file!);
+                        await task.whenComplete(() async {
+                          await reference.getDownloadURL().then((value) {
+                            processInsertPostCustomer(value);
+                          });
+                        });
+                      });
+                    }
+                  },
+                  icon: Icon(Icons.send))
+              : SizedBox(),
+        ],
+      ),
+    );
+  }
+
+  Row newName() {
+    return Row(
+      children: [
+        newCircleAvatar(postCustomerModels[0].pathUrl),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ShowText(
+              title: postCustomerModels[0].name,
+            ),
+            ShowText(
+              title: TimeToString(timestamp: postCustomerModels[0].timePost)
+                  .findString(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Container newCircleAvatar(String url) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      width: 48,
+      height: 48,
+      child: CircleAvatar(
+        backgroundImage: CachedNetworkImageProvider(url),
+      ),
+    );
+  }
+
+  Future<void> processInsertPostCustomer(String urlImagePost) async {
+    String token = postCustomerModels[0].token;
+    // print('#16mar processInsertPostCustomer Work token Owner Post ==> $token');
+
+    String name = tokenSocialModel!.nameSocial;
+    String pathImage = tokenSocialModel!.avatarSocial;
+    String reply = textEditingController.text;
+
+    DateTime dateTime = DateTime.now();
+    Timestamp timeReply = Timestamp.fromDate(dateTime);
+
+    String uid = user!.uid;
+    String status = 'online';
+
+    ReplyPostModel model = ReplyPostModel(
+        name: name,
+        pathImage: pathImage,
+        reply: reply,
+        timeReply: timeReply,
+        uid: uid,
+        urlImagePost: urlImagePost,
+        status: status);
+
+    String titleNoti = 'Answer from ${tokenSocialModel!.nameSocial}';
+    String bodyNoti = model.reply;
+    bodyNoti = 'reply@$bodyNoti';
+
+    String apiSentNotification =
+        'https://www.androidthai.in.th/eye/apiNotification.php?isAdd=true&token=$token&title=$titleNoti&body=$bodyNoti';
+
+    await Dio().get(apiSentNotification).then((value) async {
+      await Firebase.initializeApp().then((value) async {
+        await FirebaseFirestore.instance
+            .collection('postcustomer')
+            .doc(docIdReply)
+            .collection('replypost')
+            .doc()
+            .set(model.toMap())
+            .then((value) {
+          // require sent notification
+          print('#28Nov Insert Reply Success');
+          textEditingController.text = '';
+          file = null;
+          readDataNotifiction();
+        });
+      });
+    }).catchError((onError) {
+      print('#16mar onError -->>> ${onError.toString()}');
+    });
+  }
+
+  Future<void> processInsertNewAnswer(
+      String answer, String urlImage, int index) async {
+    AnswerModel answerModel = AnswerModel(
+        answer: answer,
+        namePost: tokenSocialModel!.nameSocial,
+        urlPost: tokenSocialModel!.avatarSocial,
+        urlImage: urlImage,
+        timePost: Timestamp.fromDate(DateTime.now()),
+        status: 'online',
+        uidPost: user!.uid);
+
+    print('docPostCustomer ==> $docIdReply');
+    print('docReplyPost ==>> ${docIdReplyPosts[index]}');
+
+    await FirebaseFirestore.instance
+        .collection('postcustomer')
+        .doc(docIdReply)
+        .collection('replypost')
+        .doc(docIdNotifications[index])
+        .collection('answer')
+        .doc()
+        .set(answerModel.toMap())
+        .then((value) {
+      // required sent notification
+      String tokenSocialPost = postCustomerModels[0].token;
+      String titile = 'Have New Messge';
+      String body = answer;
+
+      ProcessSentNotiByToken(token: tokenSocialPost, title: titile, body: body)
+          .sentNoti();
+
+      readDataNotifiction();
+    });
+  }
+
+  Future<void> processMove(String uidAvatar) async {
+    print('#23jan uidAvatar ==>> $uidAvatar');
+
+    var result =
+        await CheckUserSocial(uidChecked: uidAvatar).processCheckUserSocial();
+    print('#23jan uidAvatar ==>> $uidAvatar === result ==> $result');
+
+    if (!result) {
+      if (uidAvatar == user!.uid) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => ShowProfile()));
+      } else {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ShowGeneralProfile(
+                      uidTechnic: uidAvatar,
+                      showContact: false,
+                    )));
+      }
+    }
   }
 }
