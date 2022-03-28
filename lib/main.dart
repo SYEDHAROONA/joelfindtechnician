@@ -52,9 +52,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
-      // routes: map,
-      // initialRoute: firstPage,
+      // home: LoginPage(), 
+      home: DetailNotiSocial(reply: 'helloUng2'),
+     
     );
   }
 }
