@@ -157,7 +157,7 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
               docIdReplyPostTarget = item.id;
               print(
                   '#27mar docIdPostcustomerTarget ==> $docIdPostcustomerTarget');
-              print('#27mar docIdReplyrTarget ==> $docIdReplyPostTarget');
+              print('#27mar docIdReplyPostTarget ==> $docIdReplyPostTarget');
 
               //Know docId คืออะไร ?
               // For ReadPost on Postcustomer
@@ -936,37 +936,42 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
             .collection('mytoken')
             .doc('doctoken')
             .get()
-            .then((value) {
+            .then((value)async {
           TokenModel tokenModel = TokenModel.fromMap(value.data()!);
           String tokenTechnicReply = tokenModel.token;
           print('#27mar tokenTechnicReply ==>> $tokenTechnicReply');
+
+             await FirebaseFirestore.instance
+        .collection('postcustomer')
+        .doc(docIdPostcustomerTarget)
+        .collection('replypost')
+        .doc(docIdReplyPostTarget)
+        .collection('answer')
+        .doc()
+        .set(answerModel.toMap())
+        .then((value) {
+      // required sent notification
+
+      String titile = 'Have New Messge';
+      String body = answer;
+
+      ProcessSentNotiByToken(token: tokenTechnicReply, title: titile, body: body)
+          .sentNoti();
+
+      readDataNotifiction();
+    });
+
+
+
         });
       }
     });
 
-    // await FirebaseFirestore.instance
-    //     .collection('postcustomer')
-    //     .doc(docIdPostcustomerTarget)
-    //     .collection('replypost')
-    //     .doc(docIdReplyPostTarget)
-    //     .collection('answer')
-    //     .doc()
-    //     .set(answerModel.toMap())
-    //     .then((value) {
-    //   // required sent notification
-
-    //   String titile = 'Have New Messge';
-    //   String body = answer;
-
-    //   ProcessSentNotiByToken(token: tokenSocialPost, title: titile, body: body)
-    //       .sentNoti();
-
-    //   readDataNotifiction();
-    // });
+   
   }
 
   Future<void> processMove(String uidAvatar) async {
-    print('#23jan uidAvatar ==>> $uidAvatar');
+    print('#27mar uidAvatar ==>> $uidAvatar');
 
     var result =
         await CheckUserSocial(uidChecked: uidAvatar).processCheckUserSocial();
@@ -982,7 +987,9 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
             MaterialPageRoute(
                 builder: (context) => ShowGeneralProfile(
                       uidTechnic: uidAvatar,
-                      showContact: false,
+                      showContact: true,
+                      postCustomerModel: postCustomerModels[0],
+                      docIDPostCustomerTarget: docIdPostcustomerTarget,
                     )));
       }
     }

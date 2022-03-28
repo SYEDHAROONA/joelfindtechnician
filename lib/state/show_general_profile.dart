@@ -1,8 +1,10 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'package:joelfindtechnician/forms/formcontact_partner.dart';
 import 'package:joelfindtechnician/models/appointment_model.dart';
 import 'package:joelfindtechnician/models/postcustomer_model.dart';
@@ -19,12 +21,14 @@ class ShowGeneralProfile extends StatefulWidget {
   final bool showContact;
   final PostCustomerModel? postCustomerModel;
   final String? docIdPostCustomer;
+  final String? docIDPostCustomerTarget;
   const ShowGeneralProfile({
     Key? key,
     required this.uidTechnic,
     required this.showContact,
     this.postCustomerModel,
     this.docIdPostCustomer,
+    this.docIDPostCustomerTarget,
   }) : super(key: key);
 
   @override
@@ -59,6 +63,10 @@ class _ShowGeneralProfileState extends State<ShowGeneralProfile> {
     showContact = widget.showContact;
     if (showContact == null) {
       showContact = false;
+    }
+
+    if (widget.docIDPostCustomerTarget != null) {
+      docIdCustomer = widget.docIDPostCustomerTarget;
     }
 
     findUser();
@@ -162,6 +170,7 @@ class _ShowGeneralProfileState extends State<ShowGeneralProfile> {
   }
 
   final User = FirebaseAuth.instance.currentUser!;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -301,13 +310,16 @@ class _ShowGeneralProfileState extends State<ShowGeneralProfile> {
         ),
         onPressed: () {
           if (colorContact!) {
+            print('#27mar contact Button Work');
+             print('#27mar postcustormModel ==> ${widget.postCustomerModel!.toMap()}');
+
             Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => FormContactPartner(
                     userModelOld: userModelOld!,
                     postCustomerModel: widget.postCustomerModel,
-                    docIdPostCustomer: widget.docIdPostCustomer ?? '',
+                    docIdPostCustomer: docIdCustomer ?? '',
                   ),
                 )).then((value) => findApprove());
           }

@@ -52,8 +52,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // home: LoginPage(), 
-      home: DetailNotiSocial(reply: 'helloUng2'),
+      home: LoginPage(), 
+      // home: DetailNotiSocial(reply: 'helloUng2'),
      
     );
   }
