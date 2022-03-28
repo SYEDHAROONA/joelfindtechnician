@@ -15,6 +15,7 @@ import 'package:joelfindtechnician/models/answer_model.dart';
 import 'package:joelfindtechnician/models/notification_model.dart';
 import 'package:joelfindtechnician/models/postcustomer_model.dart';
 import 'package:joelfindtechnician/models/replypost_model.dart';
+import 'package:joelfindtechnician/models/token_model.dart';
 import 'package:joelfindtechnician/models/token_social_model.dart';
 import 'package:joelfindtechnician/models/user_model_old.dart';
 import 'package:joelfindtechnician/state/show_circleavatar.dart';
@@ -68,6 +69,11 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
 
   TokenSocialModel? tokenSocialModel;
 
+  String?
+      docIdPostcustomerTarget; // ค่าของ docIdcustomer ที่มี reply ==> message ใน Collection replypost
+  String?
+      docIdReplyPostTarget; // ค่าของ docIdReplyPost ที่มี reply ==> message ใน Collection replypost
+
   @override
   void initState() {
     super.initState();
@@ -119,7 +125,7 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
           .where('uid', isEqualTo: user!.uid)
           .get()
           .then((value) async {
-            print('#27mar value ==>>> ${value.docs}');
+        print('#27mar value ==>>> ${value.docs}');
         for (var item in value.docs) {
           docIdUser = item.id;
           print('@4Dec docIdUser ==>> $docIdUser');
@@ -145,11 +151,6 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
             .then((value) async {
           // print('#27mar value at replypost Equalto =>> ${value.docs.length}');
 
-          String
-              docIdPostcustomerTarget; // ค่าของ docIdcustomer ที่มี reply ==> message ใน Collection replypost
-          String
-              docIdReplyPostTarget; // ค่าของ docIdReplyPost ที่มี reply ==> message ใน Collection replypost
-
           if (value.docs.isNotEmpty) {
             docIdPostcustomerTarget = docIdPostcustomer;
             for (var item in value.docs) {
@@ -167,103 +168,99 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
                     .doc(docIdPostcustomerTarget)
                     .get()
                     .then((value) async {
-                 
-                    // docIdReply = item.id;
-                    PostCustomerModel model =
-                        PostCustomerModel.fromMap(value.data()!);
+                  // docIdReply = item.id;
+                  PostCustomerModel model =
+                      PostCustomerModel.fromMap(value.data()!);
 
-                    await FirebaseFirestore.instance
-                        .collection('user')
-                        .doc(docIdUser)
-                        .collection('mynotification')
-                        .where('message', isEqualTo: message)
-                        .get()
-                        .then((value) async {
+                  await FirebaseFirestore.instance
+                      .collection('user')
+                      .doc(docIdUser)
+                      .collection('mynotification')
+                      .where('message', isEqualTo: message)
+                      .get()
+                      .then((value) async {
+                    for (var item in value.docs) {
+                      docIdMyNotification = item.id;
+                      print(
+                          '@4Dec docIdMyNotification ==>> $docIdMyNotification');
+
+                      NotificationModel notificationModel =
+                          NotificationModel.fromMap(item.data());
+                      if (notificationModel.status == 'unread') {
+                        Map<String, dynamic> map = {};
+                        map['status'] = 'read';
+                        await FirebaseFirestore.instance
+                            .collection('user')
+                            .doc(docIdUser)
+                            .collection('mynotification')
+                            .doc(docIdMyNotification)
+                            .update(map)
+                            .then((value) {
+                          print('@4Dec Update Success');
+                        });
+                      }
+                    }
+                  });
+
+                  await FirebaseFirestore.instance
+                      .collection('postcustomer')
+                      .doc(docIdPostcustomerTarget)
+                      .collection('replypost')
+                      .orderBy('timeReply', descending: true)
+                      .get()
+                      .then((value) async {
+                    if (value.docs.isNotEmpty) {
                       for (var item in value.docs) {
-                        docIdMyNotification = item.id;
-                        print(
-                            '@4Dec docIdMyNotification ==>> $docIdMyNotification');
+                        showIconSentAnswers.add(false);
+                        showAnswerTextFields.add(false);
+                        fileAnswers.add(null);
+                        answerControllers.add(TextEditingController());
+                        String docIdReplyPost2 = item.id;
 
-                        NotificationModel notificationModel =
-                            NotificationModel.fromMap(item.data());
-                        if (notificationModel.status == 'unread') {
-                          Map<String, dynamic> map = {};
-                          map['status'] = 'read';
-                          await FirebaseFirestore.instance
-                              .collection('user')
-                              .doc(docIdUser)
-                              .collection('mynotification')
-                              .doc(docIdMyNotification)
-                              .update(map)
-                              .then((value) {
-                            print('@4Dec Update Success');
-                          });
-                        }
-                      }
-                    });
+                        List<AnswerModel> answerModels = [];
+                        List<String> docIdAnswers = [];
 
-                    await FirebaseFirestore.instance
-                        .collection('postcustomer')
-                        .doc(docIdPostcustomerTarget)
-                        .collection('replypost')
-                        .orderBy('timeReply', descending: true)
-                        .get()
-                        .then((value) async {
-                     
-
-                      if (value.docs.isNotEmpty) {
-                        for (var item in value.docs) {
-                          showIconSentAnswers.add(false);
-                          showAnswerTextFields.add(false);
-                          fileAnswers.add(null);
-                          answerControllers.add(TextEditingController());
-                          String docIdReplyPost2 = item.id;
-
-                          List<AnswerModel> answerModels = [];
-                          List<String> docIdAnswers = [];
-
-                          await FirebaseFirestore.instance
-                              .collection('postcustomer')
-                              .doc(docIdPostcustomerTarget)
-                              .collection('replypost')
-                              .doc(docIdReplyPost2)
-                              .collection('answer')
-                              .orderBy('timePost', descending: false)
-                              .get()
-                              .then((value) {
-                            if (value.docs.isNotEmpty) {
-                              for (var item in value.docs) {
-                                AnswerModel answerModel =
-                                    AnswerModel.fromMap(item.data());
-                                answerModels.add(answerModel);
-                                docIdAnswers.add(item.id);
-                              }
+                        await FirebaseFirestore.instance
+                            .collection('postcustomer')
+                            .doc(docIdPostcustomerTarget)
+                            .collection('replypost')
+                            .doc(docIdReplyPost2)
+                            .collection('answer')
+                            .orderBy('timePost', descending: false)
+                            .get()
+                            .then((value) {
+                          if (value.docs.isNotEmpty) {
+                            for (var item in value.docs) {
+                              AnswerModel answerModel =
+                                  AnswerModel.fromMap(item.data());
+                              answerModels.add(answerModel);
+                              docIdAnswers.add(item.id);
                             }
-                          });
-
-                          ReplyPostModel replyPostModel =
-                              ReplyPostModel.fromMap(item.data());
-
-                          if (replyPostModel.status == 'online') {
-                            setState(() {
-                              replyPostModels.add(replyPostModel);
-                              docIdNotifications.add(item.id);
-                              listAnswerModels.add(answerModels);
-                              docIdReplyPosts.add(docIdReplyPost2);
-                              listDocIdAnswers.add(docIdAnswers);
-                              permissionAnswers
-                                  .add(user!.uid == replyPostModel.uid);
-                            });
                           }
+                        });
+
+                        ReplyPostModel replyPostModel =
+                            ReplyPostModel.fromMap(item.data());
+
+                        if (replyPostModel.status == 'online') {
+                          setState(() {
+                            replyPostModels.add(replyPostModel);
+                            docIdNotifications.add(item.id);
+                            listAnswerModels.add(answerModels);
+                            docIdReplyPosts.add(docIdReplyPost2);
+                            listDocIdAnswers.add(docIdAnswers);
+                            permissionAnswers
+                                .add(user!.uid == replyPostModel.uid);
+                          });
                         }
                       }
-                    });
+                    }
+                  });
 
-                    load = false;
-                    postCustomerModels.add(model);
+                  load = false;
+                  postCustomerModels.add(model);
 
-                    setState(() {});
-                  
+                  setState(() {});
                 });
               });
 
@@ -318,37 +315,41 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
                     Divider(thickness: 2),
                     newProvince(),
                     Divider(thickness: 2),
-                    newReply(context),
-                    file == null
-                        ? SizedBox()
-                        : Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(left: 64),
-                                width: 230,
-                                height: 200,
-                                child: Image.file(
-                                  file!,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    file = null;
-                                  });
-                                },
-                                icon: Icon(Icons.clear),
-                              ),
-                            ],
-                          ),
+                    // newReply(context),
+                    // addImageReply(),   // ถ้าต้องการ ให้ Socual ตอบ reply Post ต้องเปิด newReply(context) กับ addImageReply()
                     replyPostModels.isEmpty ? SizedBox() : listReplyPost(),
                   ],
                 ),
               ),
             ),
     );
+  }
+
+  RenderObjectWidget addImageReply() {
+    return file == null
+        ? SizedBox()
+        : Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: EdgeInsets.only(left: 64),
+                width: 230,
+                height: 200,
+                child: Image.file(
+                  file!,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    file = null;
+                  });
+                },
+                icon: Icon(Icons.clear),
+              ),
+            ],
+          );
   }
 
   Widget listReplyPost() {
@@ -396,55 +397,6 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
                 ],
               ),
             ),
-            user!.uid != replyPostModels[index].uid
-                ? SizedBox()
-                : IconButton(
-                    onPressed: () async {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: ListTile(
-                            leading: ShowImage(),
-                            title: ShowText(
-                              title: 'Confirm Delete ?',
-                            ),
-                            subtitle: ShowText(
-                              title: 'คุณต้องการจะลบ ?',
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () async {
-                                Navigator.pop(context);
-                                Map<String, dynamic> map = {};
-                                map['status'] = 'offline';
-
-                                print('##4Dec map => $map');
-                                print(
-                                    '##4Dec docIdNoti = ${docIdNotifications[index]}');
-
-                                await FirebaseFirestore.instance
-                                    .collection('postcustomer')
-                                    .doc(docIdReply)
-                                    .collection('replypost')
-                                    .doc(docIdNotifications[index])
-                                    .update(map)
-                                    .then((value) => readDataNotifiction());
-                              },
-                              child: Text('ok'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('No'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    icon: Icon(
-                      Icons.delete,
-                    ),
-                  ),
           ],
         ), // answer Row
         replyPostModels[index].urlImagePost.isEmpty
@@ -472,11 +424,12 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
                   ),
                 ),
               ),
+
         listAnswerModels[index].isEmpty
             ? SizedBox()
             : newListAnswer(listAnswerModels[index], docIdReplyPosts[index]),
 
-        permissionAnswers[index]
+        true
             ? TextButton(
                 onPressed: () {
                   setState(() {
@@ -494,10 +447,7 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
                   SizedBox(
                     width: 30,
                   ),
-                  InkWell(
-                      onTap: () => processMove(user!.uid),
-                      child: ShowCircleAvatar(
-                          url: tokenSocialModel!.avatarSocial)),
+                  ShowCircleAvatar(url: tokenSocialModel!.avatarSocial),
                   Container(
                     height: 50,
                     width: 150,
@@ -966,28 +916,53 @@ class _DetailNotiSocialState extends State<DetailNotiSocial> {
         status: 'online',
         uidPost: user!.uid);
 
-    print('docPostCustomer ==> $docIdReply');
-    print('docReplyPost ==>> ${docIdReplyPosts[index]}');
+    print('#27mar answerModel ==>> ${answerModel.toMap()}');
+
+    String uidTechnicReply = replyPostModels[index].uid;
+    print('#27mar uidTechnicReply ===>>> $uidTechnicReply');
 
     await FirebaseFirestore.instance
-        .collection('postcustomer')
-        .doc(docIdReply)
-        .collection('replypost')
-        .doc(docIdNotifications[index])
-        .collection('answer')
-        .doc()
-        .set(answerModel.toMap())
-        .then((value) {
-      // required sent notification
-      String tokenSocialPost = postCustomerModels[0].token;
-      String titile = 'Have New Messge';
-      String body = answer;
+        .collection('user')
+        .where('uid', isEqualTo: uidTechnicReply)
+        .get()
+        .then((value) async {
+      for (var item in value.docs) {
+        String docIduserReply = item.id;
+        print('#27mar docIduserReply ==>> $docIduserReply');
 
-      ProcessSentNotiByToken(token: tokenSocialPost, title: titile, body: body)
-          .sentNoti();
-
-      readDataNotifiction();
+        await FirebaseFirestore.instance
+            .collection('user')
+            .doc(docIduserReply)
+            .collection('mytoken')
+            .doc('doctoken')
+            .get()
+            .then((value) {
+          TokenModel tokenModel = TokenModel.fromMap(value.data()!);
+          String tokenTechnicReply = tokenModel.token;
+          print('#27mar tokenTechnicReply ==>> $tokenTechnicReply');
+        });
+      }
     });
+
+    // await FirebaseFirestore.instance
+    //     .collection('postcustomer')
+    //     .doc(docIdPostcustomerTarget)
+    //     .collection('replypost')
+    //     .doc(docIdReplyPostTarget)
+    //     .collection('answer')
+    //     .doc()
+    //     .set(answerModel.toMap())
+    //     .then((value) {
+    //   // required sent notification
+
+    //   String titile = 'Have New Messge';
+    //   String body = answer;
+
+    //   ProcessSentNotiByToken(token: tokenSocialPost, title: titile, body: body)
+    //       .sentNoti();
+
+    //   readDataNotifiction();
+    // });
   }
 
   Future<void> processMove(String uidAvatar) async {
