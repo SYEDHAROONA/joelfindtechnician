@@ -75,15 +75,14 @@ class _FormtoTechnicianState extends State<FormtoTechnician> {
         .doc(appointmentModel!.docIdPostcustomer)
         .get()
         .then((value) {
-      setState(() {
-        postCustomerModel = PostCustomerModel.fromMap(value.data()!);
-      });
+          postCustomerModel = PostCustomerModel.fromMap(value.data()!);
+      setState(() {});
     });
 
     await FirebaseFirestore.instance
         .collection('postcustomer')
         .doc(appointmentModel!.docIdPostcustomer)
-        .collection('replypost')
+        .collection('replypost').where('uid', isEqualTo: uidTechnic)
         .get()
         .then((value) async {
       for (var item in value.docs) {
@@ -440,7 +439,8 @@ class _FormtoTechnicianState extends State<FormtoTechnician> {
                           SocialMyNotificationModel(
                         docIdPostCustomer: appointmentModel!.docIdPostcustomer,
                         docIdTechnic: docIdTechnic!,
-                        timeConfirm: timestamp, readed: false,
+                        timeConfirm: timestamp,
+                        readed: false,
                       );
 
                       await FirebaseFirestore.instance

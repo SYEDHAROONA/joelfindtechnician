@@ -117,7 +117,7 @@ class _ShowGeneralProfileState extends State<ShowGeneralProfile> {
           // รู้ doc ที่ส่งมา , doc ที่มี
           print('#2feb ค่า doc ที่ส่งมา ==> $docIdCustomer');
 
-          if ((approve == 'unread') || (approve == 'read')) {
+          if ((approve == 'unread') || (approve == 'read') || (approve == 'Confirm')) {
             if (docIdCustomer == appointmentModel.docIdPostcustomer) {
               setState(() {
                 colorContact = false;
