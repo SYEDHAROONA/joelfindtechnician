@@ -116,7 +116,7 @@ class _LoginSuccessState extends State<LoginSuccess> {
               ));
         });
       } else {
-        print('Noti form Cancel AppointMent');
+        print('#29mar Noti form Cancel AppointMent');
         Navigator.push(
           context,
           MaterialPageRoute(

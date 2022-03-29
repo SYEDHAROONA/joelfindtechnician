@@ -8,11 +8,19 @@ class SocialMyNotificationModel {
   final String docIdTechnic;
   final Timestamp timeConfirm;
   final bool readed;
+  final String customerName;
+  final String detailOfWork;
+  final String waranty;
+  final String totalPrice;
   SocialMyNotificationModel({
     required this.docIdPostCustomer,
     required this.docIdTechnic,
     required this.timeConfirm,
     required this.readed,
+    required this.customerName,
+    required this.detailOfWork,
+    required this.waranty,
+    required this.totalPrice,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,6 +29,10 @@ class SocialMyNotificationModel {
       'docIdTechnic': docIdTechnic,
       'timeConfirm': timeConfirm,
       'readed': readed,
+      'customerName': customerName,
+      'detailOfWork': detailOfWork,
+      'waranty': waranty,
+      'totalPrice': totalPrice,
     };
   }
 
@@ -30,6 +42,10 @@ class SocialMyNotificationModel {
       docIdTechnic: (map['docIdTechnic'] ?? '') as String,
       timeConfirm: (map['timeConfirm']),
       readed: (map['readed'] ?? false) as bool,
+      customerName: (map['customerName'] ?? '') as String,
+      detailOfWork: (map['detailOfWork'] ?? '') as String,
+      waranty: (map['waranty'] ?? '') as String,
+      totalPrice: (map['totalPrice'] ?? '') as String,
     );
   }
 

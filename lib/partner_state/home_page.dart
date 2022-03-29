@@ -162,7 +162,8 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(
                   builder: (context) => FormtoTechnician(
                     docIdAppointment: docIdAppointment,
-                    appointmentModel: appointmentModel,
+                    appointmentModel: appointmentModel, customerName: customerName,
+                    
                   ),
                 ));
           }

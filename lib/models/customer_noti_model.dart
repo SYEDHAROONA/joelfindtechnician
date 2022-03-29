@@ -14,6 +14,7 @@ class CustomerNotiModel {
   final SocialMyNotificationModel? socialMyNotificationModel;
   final bool fontWeight;
   final String? docIdPostCustomer;
+  final String? customerName;
 
   CustomerNotiModel({
     required this.title,
@@ -23,6 +24,7 @@ class CustomerNotiModel {
     this.socialMyNotificationModel,
     required this.fontWeight,
     this.docIdPostCustomer,
+    this.customerName,
   });
 
   Map<String, dynamic> toMap() {
@@ -34,6 +36,7 @@ class CustomerNotiModel {
       'socialMyNotificationModel': socialMyNotificationModel?.toMap(),
       'fontWeight': fontWeight,
       'docIdPostCustomer': docIdPostCustomer,
+      'customerName': customerName,
     };
   }
 
@@ -45,7 +48,8 @@ class CustomerNotiModel {
       postCustomerModel: map['postCustomerModel'] != null ? PostCustomerModel.fromMap(map['postCustomerModel'] as Map<String,dynamic>) : null,
       socialMyNotificationModel: map['socialMyNotificationModel'] != null ? SocialMyNotificationModel.fromMap(map['socialMyNotificationModel'] as Map<String,dynamic>) : null,
       fontWeight: (map['fontWeight'] ?? false) as bool,
-      docIdPostCustomer: (map['docIdPostCustomer'] ?? '') as String,
+      docIdPostCustomer: map['docIdPostCustomer'] != null ? map['docIdPostCustomer'] as String : null,
+      customerName: map['customerName'] != null ? map['customerName'] as String : null,
     );
   }
 

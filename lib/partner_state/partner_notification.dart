@@ -178,6 +178,7 @@ class _PartnerNotificationState extends State<PartnerNotification> {
               partnerNotiModelsorteds[index].docId,
               partnerNotiModelsorteds[index].bolCollection,
               partnerNotiModelsorteds[index].appointmentModel,
+              appointMentModels[index].customerName,
             ));
   }
 
@@ -188,8 +189,8 @@ class _PartnerNotificationState extends State<PartnerNotification> {
     String title,
     String docId,
     bool bolCollection,
-    AppointmentModel?
-        appointmentModel, //true ==> myNotificatio, false ==> appointment
+    AppointmentModel? appointmentModel,
+    String customerName, //true ==> myNotificatio, false ==> appointment
   ) {
     return GestureDetector(
       onTap: () {
@@ -210,7 +211,9 @@ class _PartnerNotificationState extends State<PartnerNotification> {
               context,
               MaterialPageRoute(
                 builder: (context) => FormtoTechnician(
-                  docIdAppointment: docId, appointmentModel: appointmentModel!,
+                  docIdAppointment: docId,
+                  appointmentModel: appointmentModel!,
+                  customerName: customerName,
                 ),
               ));
         }

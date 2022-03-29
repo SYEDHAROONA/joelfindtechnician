@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:joelfindtechnician/alertdialog/my_dialog.dart';
 import 'package:joelfindtechnician/alertdialog/partner_cancel.dart';
-
 import 'package:joelfindtechnician/forms/check_detail.dart';
 import 'package:joelfindtechnician/forms/confirm_job.dart';
 import 'package:joelfindtechnician/models/answer_model.dart';
@@ -31,10 +31,12 @@ import 'package:joelfindtechnician/widgets/show_text.dart';
 class FormtoTechnician extends StatefulWidget {
   final String? docIdAppointment;
   final AppointmentModel? appointmentModel;
+  final String customerName;
   const FormtoTechnician({
     Key? key,
     this.docIdAppointment,
     this.appointmentModel,
+    required this.customerName,
   }) : super(key: key);
 
   @override
@@ -75,14 +77,15 @@ class _FormtoTechnicianState extends State<FormtoTechnician> {
         .doc(appointmentModel!.docIdPostcustomer)
         .get()
         .then((value) {
-          postCustomerModel = PostCustomerModel.fromMap(value.data()!);
+      postCustomerModel = PostCustomerModel.fromMap(value.data()!);
       setState(() {});
     });
 
     await FirebaseFirestore.instance
         .collection('postcustomer')
         .doc(appointmentModel!.docIdPostcustomer)
-        .collection('replypost').where('uid', isEqualTo: uidTechnic)
+        .collection('replypost')
+        .where('uid', isEqualTo: uidTechnic)
         .get()
         .then((value) async {
       for (var item in value.docs) {
@@ -441,6 +444,10 @@ class _FormtoTechnicianState extends State<FormtoTechnician> {
                         docIdTechnic: docIdTechnic!,
                         timeConfirm: timestamp,
                         readed: false,
+                        customerName: widget.customerName,
+                        detailOfWork: detailOfWork!,
+                        waranty: warantly!,
+                        totalPrice: totalPrice!,
                       );
 
                       await FirebaseFirestore.instance
