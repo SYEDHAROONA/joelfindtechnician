@@ -61,6 +61,8 @@ class _FormtoTechnicianState extends State<FormtoTechnician> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    print('#30mar customerName ==>> ${widget.customerName}');
     docIdAppointment = widget.docIdAppointment;
     appointmentModel = widget.appointmentModel;
 

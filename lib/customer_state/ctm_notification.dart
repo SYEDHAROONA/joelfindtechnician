@@ -71,7 +71,10 @@ class _CustomerNotificationState extends State<CustomerNotification> {
           navigatorBool: false,
           socialMyNotificationModel: socialMyNotificationModel,
           fontWeight: socialMyNotificationModel.readed,
+          // customerName: socialMyNotificationModel.customerName,
         );
+
+        
 
         setState(() {
           customerNotiModels.add(customerNotiModel);
@@ -212,7 +215,7 @@ class _CustomerNotificationState extends State<CustomerNotification> {
         } else {
           // for form Contact
 
-          // print('#29mar customerNotiModel ==>> ${customerNotiModel.toMap()}');
+          print('#29mar customerNotiModel on ctm_noti ==>> ${customerNotiModel.toMap()}');
 
           Navigator.push(
               context,

@@ -19,7 +19,7 @@ import 'package:joelfindtechnician/partner_state/home_page.dart';
 import 'package:joelfindtechnician/partner_state/mywallet.dart';
 import 'package:joelfindtechnician/partner_state/partner_notification.dart';
 import 'package:joelfindtechnician/partner_state/partner_orderhistory.dart';
-import 'package:joelfindtechnician/forms/c.dart';
+import 'package:joelfindtechnician/forms/require_credit_card.dart';
 import 'package:joelfindtechnician/state/community_page.dart';
 import 'package:joelfindtechnician/state/detail_noti_social.dart';
 import 'package:joelfindtechnician/state/list_technic_where_type.dart';
