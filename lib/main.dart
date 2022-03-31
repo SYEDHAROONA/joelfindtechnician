@@ -10,6 +10,7 @@ import 'package:joelfindtechnician/customer_state/ctm_notification.dart';
 import 'package:joelfindtechnician/customer_state/ctm_ordethistory.dart';
 import 'package:joelfindtechnician/customer_state/login_success.dart';
 import 'package:joelfindtechnician/forms/check_detail.dart';
+import 'package:joelfindtechnician/forms/check_out.dart';
 import 'package:joelfindtechnician/forms/confirm_job.dart';
 
 import 'package:joelfindtechnician/forms/formcontact_partner.dart';
@@ -52,8 +53,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(), 
-      // home: DetailNotiSocial(reply: 'helloUng2'),
+      // home: LoginPage(), 
+      home: CheckOut(),
      
     );
   }
