@@ -66,7 +66,7 @@ class AlertDetail extends StatelessWidget {
               SizedBox(height: 400),
               Align(
                 alignment: Alignment.bottomRight,
-                child: FlatButton(
+                child: OutlinedButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },

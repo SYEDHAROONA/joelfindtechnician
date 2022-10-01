@@ -243,7 +243,7 @@ class _ConfirmJobState extends State<ConfirmJob> {
             // ),
             Row(
               children: [
-                FlatButton.icon(
+                OutlinedButton.icon(
                   onPressed: () {
                     pickDate(context);
                   },
@@ -254,8 +254,8 @@ class _ConfirmJobState extends State<ConfirmJob> {
                   ),
                   label: Text(getDate()),
                 ),
-                FlatButton.icon(
-                  padding: EdgeInsets.only(right: 10),
+                OutlinedButton.icon(
+                  // padding: EdgeInsets.only(right: 10),
                   onPressed: () {
                     pickTime(context);
                   },
@@ -271,9 +271,9 @@ class _ConfirmJobState extends State<ConfirmJob> {
             Container(
               height: 50,
               width: 150,
-              child: FlatButton(
-                textColor: Colors.white,
-                color: Colors.blueAccent,
+              child: OutlinedButton(
+                // textColor: Colors.white,
+                // color: Colors.blueAccent,
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -306,11 +306,11 @@ class _ConfirmJobState extends State<ConfirmJob> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                // shape: RoundedRectangleBorder(
+                //   borderRadius: BorderRadius.circular(20),
                 ),
               ),
-            ),
+            // ),
           ],
         ),
       ),

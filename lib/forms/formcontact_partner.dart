@@ -337,9 +337,9 @@ class _FormContactPartnerState extends State<FormContactPartner> {
     return Container(
       height: 50,
       width: 330,
-      child: FlatButton(
-        textColor: Colors.white,
-        color: Colors.blueAccent,
+      child: OutlinedButton(
+        // textColor: Colors.white,
+        // color: Colors.blueAccent,
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
@@ -412,17 +412,17 @@ class _FormContactPartnerState extends State<FormContactPartner> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+        // shape: RoundedRectangleBorder(
+        //   borderRadius: BorderRadius.circular(20),
         ),
-      ),
+      //),
     );
   }
 
   Row newAppointment(BuildContext context) {
     return Row(
       children: [
-        FlatButton.icon(
+        OutlinedButton.icon(
           onPressed: () {
             pickDate(context);
           },
@@ -433,8 +433,8 @@ class _FormContactPartnerState extends State<FormContactPartner> {
           ),
           label: Text(getDate()),
         ),
-        FlatButton.icon(
-          padding: EdgeInsets.only(right: 10),
+        OutlinedButton.icon(
+          //padding: EdgeInsets.only(right: 10),
           onPressed: () {
             pickTime(context);
           },

@@ -88,7 +88,7 @@ class _ChooseImageState extends State<ChooseImage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FlatButton.icon(
+                            OutlinedButton.icon(
                               onPressed: () {
                                 _imageFromCamera();
                                 Navigator.of(context).pop();
@@ -97,7 +97,7 @@ class _ChooseImageState extends State<ChooseImage> {
                                   color: Colors.purpleAccent),
                               label: Text('Camera'),
                             ),
-                            FlatButton.icon(
+                            OutlinedButton.icon(
                               onPressed: () {
                                 _imageFromGallery();
                                 Navigator.of(context).pop();
@@ -161,8 +161,8 @@ class _ChooseImageState extends State<ChooseImage> {
                   Container(
                     height: 50,
                     width: 350,
-                    child: FlatButton(
-                      color: Colors.blue,
+                    child: OutlinedButton(
+                      //color: Colors.blue,
                       onPressed: () {
                         if (image == null) {
                           MyDialog().normalDialog(
@@ -179,11 +179,11 @@ class _ChooseImageState extends State<ChooseImage> {
                           color: Colors.white,
                         ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                  ),
+                  //),
                 ],
               ),
             ),

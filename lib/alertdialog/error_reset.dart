@@ -72,7 +72,7 @@ dialogContent(BuildContext context) {
             SizedBox(height: 24),
             Align(
               alignment: Alignment.bottomRight,
-              child: FlatButton(
+              child: OutlinedButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },

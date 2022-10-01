@@ -58,9 +58,9 @@ class _JobdoneState extends State<Jobdone> {
               Container(
                 height: 50,
                 width: 330,
-                child: FlatButton(
-                  textColor: Colors.white,
-                  color: Colors.blueAccent,
+                child: OutlinedButton(
+                  // textColor: Colors.white,
+                  // color: Colors.blueAccent,
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {}
                   },
@@ -71,11 +71,11 @@ class _JobdoneState extends State<Jobdone> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                  // shape: RoundedRectangleBorder(
+                  //   borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-              ),
+              //),
             ],
           ),
         ),

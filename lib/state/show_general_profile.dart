@@ -263,10 +263,10 @@ class _ShowGeneralProfileState extends State<ShowGeneralProfile> {
           flex: 1,
           child: Padding(
             padding: EdgeInsets.only(left: 20, right: 5, top: 8),
-            child: FlatButton(
-              height: 40,
-              // minWidth: 170,
-              color: Colors.blue,
+            child: OutlinedButton(
+              // height: 40,
+              // // minWidth: 170,
+              // color: Colors.blue,
               onPressed: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ShowReview()));
@@ -279,12 +279,12 @@ class _ShowGeneralProfileState extends State<ShowGeneralProfile> {
                   fontSize: 17,
                 ),
               ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+              // shape: RoundedRectangleBorder(
+              //   borderRadius: BorderRadius.circular(10),
               ),
             ),
           ),
-        ),
+        // ),
         Expanded(
           flex: 1,
           child: Padding(

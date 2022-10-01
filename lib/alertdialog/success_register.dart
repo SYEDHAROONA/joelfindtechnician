@@ -69,7 +69,7 @@ class SuccessRegister extends StatelessWidget {
               SizedBox(height: 24),
               Align(
                 alignment: Alignment.bottomRight,
-                child: FlatButton(
+                child: OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(

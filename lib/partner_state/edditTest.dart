@@ -152,8 +152,8 @@ class _EdditTestState extends State<EdditTest> {
                         child: Container(
                           height: 50,
                           width: 350,
-                          child: FlatButton(
-                            color: Colors.blue,
+                          child: OutlinedButton(
+                            //color: Colors.blue,
                             onPressed: () {
                               if (formKey.currentState!.validate()) {
                                 if (change) {
@@ -178,12 +178,12 @@ class _EdditTestState extends State<EdditTest> {
                                 color: Colors.white,
                               ),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                            // shape: RoundedRectangleBorder(
+                            //   borderRadius: BorderRadius.circular(20),
                             ),
                           ),
                         ),
-                      ),
+                     // ),
                     ],
                   ),
                 ),
@@ -215,7 +215,7 @@ class _EdditTestState extends State<EdditTest> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                FlatButton.icon(
+                                OutlinedButton.icon(
                                   onPressed: () {
                                     _imageFromCamera();
                                     Navigator.of(context).pop();
@@ -224,7 +224,7 @@ class _EdditTestState extends State<EdditTest> {
                                       color: Colors.purpleAccent),
                                   label: Text('Camera'),
                                 ),
-                                FlatButton.icon(
+                                OutlinedButton.icon(
                                   onPressed: () {
                                     _imageFromGallery();
                                     Navigator.of(context).pop();

@@ -111,8 +111,8 @@ class _LoginPage extends State<LoginPage> {
 
   Container buildPartner(BuildContext context) {
     return Container(
-      child: FlatButton(
-          textColor: Colors.black,
+      child: OutlinedButton(
+          //textColor: Colors.black,
           child: Text(
             "Partner Click!",
             style: GoogleFonts.lato(

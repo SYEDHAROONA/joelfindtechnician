@@ -118,8 +118,8 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         Container(
                           height: 50,
                           width: 330,
-                          child: FlatButton(
-                            color: Colors.blue,
+                          child: OutlinedButton(
+                            //color: Colors.blue,
                             onPressed: () {
                               if (checkFields())
                                 SocialService()
@@ -133,11 +133,11 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                                 color: Colors.white,
                               ),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                            // shape: RoundedRectangleBorder(
+                            //   borderRadius: BorderRadius.circular(20),
                             ),
                           ),
-                        ),
+                        //),
                       ],
                     ),
                   ),

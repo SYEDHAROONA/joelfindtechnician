@@ -1007,7 +1007,7 @@ class _CommunityPageState extends State<CommunityPage> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          FlatButton.icon(
+                                          OutlinedButton.icon(
                                             onPressed: () {
                                               _imageFromCamera(index);
                                               Navigator.of(context).pop();
@@ -1016,7 +1016,7 @@ class _CommunityPageState extends State<CommunityPage> {
                                                 color: Colors.purpleAccent),
                                             label: Text('Camera'),
                                           ),
-                                          FlatButton.icon(
+                                          OutlinedButton.icon(
                                             onPressed: () {
                                               _imageFromGallery(index);
                                               Navigator.of(context).pop();

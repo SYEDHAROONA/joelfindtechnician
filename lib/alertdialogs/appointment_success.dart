@@ -29,10 +29,10 @@ class _AppointmentSuccessState extends State<AppointmentSuccess> {
               ),
               SizedBox(height: 30),
               Container(
-                child: FlatButton(
-                  height: 40,
-                  minWidth: 330,
-                  color: Colors.blue,
+                child: OutlinedButton(
+                  // height: 40,
+                  // minWidth: 330,
+                  // color: Colors.blue,
                   onPressed: () {},
                   child: Text(
                     'OK',
@@ -42,11 +42,11 @@ class _AppointmentSuccessState extends State<AppointmentSuccess> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                  // shape: RoundedRectangleBorder(
+                  //   borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-              ),
+              // ),
             ],
           ),
         ),

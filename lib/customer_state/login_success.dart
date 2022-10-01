@@ -241,12 +241,12 @@ class _LoginSuccessState extends State<LoginSuccess> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
-                      child: FlatButton(
-                        padding: EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        color: Color(0xFFF5F6F9),
+                      child: OutlinedButton(
+                        // padding: EdgeInsets.all(15),
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(30),
+                        // ),
+                        // color: Color(0xFFF5F6F9),
                         onPressed: () {
                           Navigator.push(
                               context,
@@ -281,12 +281,12 @@ class _LoginSuccessState extends State<LoginSuccess> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
-                      child: FlatButton(
-                        padding: EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        color: Color(0xFFF5F6F9),
+                      child: OutlinedButton(
+                        // padding: EdgeInsets.all(15),
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(30),
+                        // ),
+                        // color: Color(0xFFF5F6F9),
                         onPressed: () {
                           Navigator.push(
                               context,
@@ -320,12 +320,12 @@ class _LoginSuccessState extends State<LoginSuccess> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
-                      child: FlatButton(
-                        padding: EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        color: Color(0xFFF5F6F9),
+                      child: OutlinedButton(
+                        // padding: EdgeInsets.all(15),
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(30),
+                        // ),
+                        // color: Color(0xFFF5F6F9),
                         onPressed: () {
                           Navigator.push(
                               context,
@@ -359,12 +359,12 @@ class _LoginSuccessState extends State<LoginSuccess> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
-                      child: FlatButton(
-                        padding: EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        color: Color(0xFFF5F6F9),
+                      child: OutlinedButton(
+                        // padding: EdgeInsets.all(15),
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(30),
+                        // ),
+                        // color: Color(0xFFF5F6F9),
                         onPressed: () {
                           Navigator.push(
                               context,
@@ -397,12 +397,12 @@ class _LoginSuccessState extends State<LoginSuccess> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
-                      child: FlatButton(
-                        padding: EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        color: Color(0xFFF5F6F9),
+                      child: OutlinedButton(
+                        // padding: EdgeInsets.all(15),
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(30),
+                        // ),
+                        // color: Color(0xFFF5F6F9),
                         onPressed: () {
                           Navigator.push(
                               context,
@@ -435,12 +435,12 @@ class _LoginSuccessState extends State<LoginSuccess> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
-                      child: FlatButton(
-                        padding: EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        color: Color(0xFFF5F6F9),
+                      child: OutlinedButton(
+                        // padding: EdgeInsets.all(15),
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(30),
+                        // ),
+                        // color: Color(0xFFF5F6F9),
                         onPressed: () {
                           Navigator.push(
                               context,
@@ -473,12 +473,12 @@ class _LoginSuccessState extends State<LoginSuccess> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
-                      child: FlatButton(
-                        padding: EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        color: Color(0xFFF5F6F9),
+                      child: OutlinedButton(
+                        // padding: EdgeInsets.all(15),
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(30),
+                        // ),
+                        // color: Color(0xFFF5F6F9),
                         onPressed: () {
                           Navigator.push(
                               context,
@@ -512,12 +512,12 @@ class _LoginSuccessState extends State<LoginSuccess> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
-                      child: FlatButton(
-                        padding: EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        color: Color(0xFFF5F6F9),
+                      child: OutlinedButton(
+                        // padding: EdgeInsets.all(15),
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(30),
+                        // ),
+                        // color: Color(0xFFF5F6F9),
                         onPressed: () {
                           SocialService().signOut();
                           Navigator.of(context).pushReplacement(

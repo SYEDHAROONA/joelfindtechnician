@@ -363,9 +363,9 @@ class _CheckDetailState extends State<CheckDetail> {
               padding: const EdgeInsets.all(8.0),
               child: Container(
                 height: 50,
-                child: FlatButton(
-                  textColor: Colors.white,
-                  color: Colors.blueAccent,
+                child: OutlinedButton(
+                  // textColor: Colors.white,
+                  // color: Colors.blueAccent,
                   onPressed: () {
                     if (taxID?.isEmpty ?? true) {
                       MyDialog().normalDialog(
@@ -379,12 +379,12 @@ class _CheckDetailState extends State<CheckDetail> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                  // shape: RoundedRectangleBorder(
+                  //   borderRadius: BorderRadius.circular(20),
                   ),
                 ),
               ),
-            ),
+            // ),
           ],
         ),
       ),

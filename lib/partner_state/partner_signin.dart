@@ -167,8 +167,8 @@ class _PartnerSigninState extends State<PartnerSignin> {
                       Container(
                         height: 50,
                         width: 330,
-                        child: FlatButton(
-                          color: Colors.blue,
+                        child: OutlinedButton(
+                          // color: Colors.blue,
                           onPressed: () async {
                             if (checkFields()) {
                               await Firebase.initializeApp()
@@ -207,11 +207,11 @@ class _PartnerSigninState extends State<PartnerSignin> {
                               color: Colors.white,
                             ),
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                          // shape: RoundedRectangleBorder(
+                          //   borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                      ),
+                      // ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

@@ -300,7 +300,7 @@ class _RegisterPartnerState extends State<RegisterPartner> {
 
   _showSnackbar(String message) {
     final snackBar = SnackBar(content: Text(message));
-    _scaffoldKey.currentState!.showSnackBar(snackBar);
+    //_scaffoldKey.currentState!.showSnackBar(snackBar);
   }
 
   @override
@@ -390,9 +390,9 @@ class _RegisterPartnerState extends State<RegisterPartner> {
                   Container(
                     height: 50,
                     width: 330,
-                    child: FlatButton(
-                      textColor: Colors.white,
-                      color: Colors.blueAccent,
+                    child: OutlinedButton(
+                      // textColor: Colors.white,
+                      // color: Colors.blueAccent,
                       child: Text(
                         'ตกลง',
                         style: GoogleFonts.lato(
@@ -401,11 +401,11 @@ class _RegisterPartnerState extends State<RegisterPartner> {
                         ),
                       ),
                       onPressed: _submitForm,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                  ),
+                  //),
                   Container(
                     child: TextButton(
                       onPressed: () {
@@ -595,7 +595,7 @@ class _RegisterPartnerState extends State<RegisterPartner> {
     return Row(
       children: [
         Container(
-          child: FlatButton.icon(
+          child: OutlinedButton.icon(
             onPressed: () {
               normalDialog(context);
             },
@@ -610,7 +610,7 @@ class _RegisterPartnerState extends State<RegisterPartner> {
           ),
         ),
         Container(
-          child: FlatButton.icon(
+          child: OutlinedButton.icon(
             onPressed: () {},
             icon: Icon(
               Icons.location_on_outlined,
@@ -623,7 +623,7 @@ class _RegisterPartnerState extends State<RegisterPartner> {
           ),
         ),
         Container(
-          child: FlatButton.icon(
+          child: OutlinedButton.icon(
             onPressed: () {},
             icon: Icon(
               Icons.location_on_outlined,

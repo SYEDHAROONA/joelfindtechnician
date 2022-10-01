@@ -145,8 +145,8 @@ class _SignUpState extends State<SignUp> {
                         Container(
                           height: 50,
                           width: 330,
-                          child: FlatButton(
-                            color: Colors.blue,
+                          child: OutlinedButton(
+                            // color: Colors.blue,
                             onPressed: () async {
                               if (checkFields()) {
                                 print('email = $email, password = $password');
@@ -221,11 +221,11 @@ class _SignUpState extends State<SignUp> {
                                 color: Colors.white,
                               ),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                            // shape: RoundedRectangleBorder(
+                            //   borderRadius: BorderRadius.circular(20),
                             ),
                           ),
-                        ),
+                        // ),
                       ],
                     ),
                   ),

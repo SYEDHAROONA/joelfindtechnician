@@ -209,9 +209,9 @@ class _CreatePostState extends State<CreatePost> {
       margin: EdgeInsets.only(top: 30),
       height: 50,
       width: 330,
-      child: FlatButton(
-        textColor: Colors.white,
-        color: Colors.blueAccent,
+      child: OutlinedButton(
+        // textColor: Colors.white,
+        // color: Colors.blueAccent,
         onPressed: () {
           if (_formKey.currentState!.validate()) {
             if (amphur?.isEmpty ?? true) {
@@ -234,10 +234,10 @@ class _CreatePostState extends State<CreatePost> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+        // shape: RoundedRectangleBorder(
+        //   borderRadius: BorderRadius.circular(20),
         ),
-      ),
+      // ),
     );
   }
 
@@ -392,7 +392,7 @@ class _CreatePostState extends State<CreatePost> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FlatButton.icon(
+                OutlinedButton.icon(
                   onPressed: () {
                     _imageFromCamera();
                     Navigator.of(context).pop();
@@ -400,7 +400,7 @@ class _CreatePostState extends State<CreatePost> {
                   icon: Icon(Icons.camera, color: Colors.purpleAccent),
                   label: Text('Camera'),
                 ),
-                FlatButton.icon(
+                OutlinedButton.icon(
                   onPressed: () {
                     _imageFromGallery();
                     Navigator.of(context).pop();
